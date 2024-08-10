@@ -13,7 +13,7 @@
 
     <form>
         <div class="form-floating">
-            <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+            <input type="text" class="form-control" id="floatingInput" placeholder="Id">
             <label class="text-muted" for="floatingInput">아이디</label>
         </div>
         <div class="form-floating">
@@ -23,9 +23,11 @@
         <button class="w-100 btn btn-lg btn-secondary mt-3" type="submit">로그인</button>
     </form>
 
-    <button class="w-100 btn btn-lg btn-secondary mt-3" type="submit">회원가입</button>
-    <button class="w-100 btn btn-lg btn-success mt-3" type="submit">네이버 로그인</button>
+    <button type="button" class="w-100 btn btn-lg btn-secondary mt-3" id="signupButton">회원가입</button>
+    <button class="w-100 btn btn-lg btn-success mt-3" type="button">네이버 로그인</button>
 </div>
+
+<script th:src="@{/js/navigation.js}"></script>
 
 </body>
 </html>
