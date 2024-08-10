@@ -1,5 +1,5 @@
 function goToSignupPage() {
-    window.location.href = '/templates/domain/main.html';
+    window.location.href = '/domain/join';
 }
 
 document.addEventListener('DOMContentLoaded', function () {
