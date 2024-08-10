@@ -1,0 +1,22 @@
+.text-truncate {
+    width: 100px; /* 원하는 너비 설정 */
+    white-space: nowrap; /* 텍스트가 한 줄로 유지되도록 설정 */
+    overflow: hidden; /* 넘치는 텍스트를 숨김 */
+    text-overflow: ellipsis; /* 넘치는 부분을 말줄임표(...)로 표시 */
+}
+.line-clamp-banner {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* 두 줄까지 허용 */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis; /* 넘치는 부분을 말줄임표로 표시 */
+    width: 300px; /* 적절한 너비 설정 */
+}
+.line-clamp-streaming {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* 두 줄까지 허용 */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis; /* 넘치는 부분을 말줄임표로 표시 */
+    width: 190px; /* 적절한 너비 설정 */
+}
