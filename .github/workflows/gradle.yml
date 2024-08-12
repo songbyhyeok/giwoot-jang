@@ -29,9 +29,9 @@ jobs:
         collation server: 'utf8_general_ci'
         mysql version: '8.0'
         mysql database: 'giwoot_jang_schema'
-        mysql root password: ${{ secrets.RootPassword }}
+        mysql root password: ${{ secrets.MYSQL_USER }}
         mysql user: 'developer'
-        mysql password: ${{ secrets.DatabasePassword }}
+        mysql password: ${{ secrets.MYSQL_PASSWORD }}
 
     # Grant execute permission for Gradle
     - name: Grant execute permission for Gradle
@@ -44,8 +44,6 @@ jobs:
 
     - name: Build with Gradle Wrapper
       run: ./gradlew build
-      env:
-        SPRING_PROFILES_ACTIVE: test
 
   dependency-submission:
 
