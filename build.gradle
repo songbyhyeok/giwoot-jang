@@ -45,9 +45,11 @@ tasks.named('test') {
 }
 
 def envProps = new Properties()
-file(".env").withInputStream { envProps.load(it) }
+def envFile = file(".env")
+if (envFile.exists()) {
+	envFile.withInputStream { envProps.load(it) }
+}
 
 test {
 	environment envProps
 }
-
