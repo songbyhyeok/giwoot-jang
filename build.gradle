@@ -43,3 +43,11 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+def envProps = new Properties()
+file(".env").withInputStream { envProps.load(it) }
+
+test {
+	environment envProps
+}
+
