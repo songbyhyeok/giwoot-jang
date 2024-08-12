@@ -2,8 +2,8 @@
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/giwoot_jang_schema
-    username: ${MYSQL_USER}
-    password: ${MYSQL_PASSWORD}
+    username: root
+    password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
