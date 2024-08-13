@@ -44,4 +44,12 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+def envProps = new Properties()
+def envFile = file(".env")
+if (envFile.exists()) {
+	envFile.withInputStream { envProps.load(it) }
+}
 
+test {
+	environment envProps
+}
