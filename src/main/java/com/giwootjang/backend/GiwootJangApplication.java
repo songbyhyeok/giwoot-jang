@@ -9,5 +9,4 @@ public class GiwootJangApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(GiwootJangApplication.class, args);
 	}
-
 }
