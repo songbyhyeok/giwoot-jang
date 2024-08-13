@@ -16,6 +16,9 @@ class GiwootJangApplicationTests {
 		String rootPassword = System.getenv("MYSQL_ROOT_PASSWORD");
 		assertNotNull(rootPassword, "MYSQL_ROOT_PASSWORD should not be null");
 
+		System.out.println(securityName);
+		System.out.println(rootPassword);
+
 		// Additional assertions...
 	}
 
