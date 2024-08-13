@@ -31,11 +31,11 @@ jobs:
       - name: Grant execute permission for Gradle
         run: chmod +x ./gradlew
 
-#      - name: Create .env file
-#        run: |
-#          echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
-#          echo "SECURITY_NAME=${{ secrets.SECURITY_NAME }}" >> .env
-#          echo "SECURITY_PASSWORD=${{ secrets.SECURITY_PASSWORD }}" >> .env
+      - name: Create .env file
+        run: |
+          echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
+          echo "SECURITY_NAME=${{ secrets.SECURITY_NAME }}" >> .env
+          echo "SECURITY_PASSWORD=${{ secrets.SECURITY_PASSWORD }}" >> .env
 
       - name: Setup MySQL
         uses: mirromutth/mysql-action@v1.1
@@ -44,7 +44,7 @@ jobs:
           container port: 3306                 # MySQL 컨테이너의 포트
           mysql version: '8.0'                 # MySQL 버전
           mysql database: 'giwoot_jang_schema' # 사용 중인 데이터베이스 이름
-          mysql root password: ${{ secrets.MYSQL_ROOT_PASSWORD }} # 'root' 사용자 비밀번호를 GitHub Secrets에 설정
+          mysql root password: ${ secrets.MYSQL_ROOT_PASSWORD } # 'root' 사용자 비밀번호를 GitHub Secrets에 설정
           mysql user: ''                       # 비워두면 root 사용자 사용
           mysql password: ''                   # 비워두면 root 사용자 비밀번호 사용
 
