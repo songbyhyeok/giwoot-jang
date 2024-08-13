@@ -49,13 +49,6 @@ jobs:
         env:
           SECURITY_NAME: ${{ secrets.SECURITY_NAME }}
           MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-
-      - name: Print Environment Variables
-        run: echo "SECURITY_NAME=$SECURITY_NAME, MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD"
-        env:
-          SECURITY_NAME: ${{ secrets.SECURITY_NAME }}
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-
   dependency-submission:
 
     runs-on: ubuntu-latest
