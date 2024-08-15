@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
 </head>
 <body>
 
-<div class="container-sm border" style="width:650px; height:500px;">
+<div th:fragment="content" class="container-sm border" style="width:650px; height:500px;">
     <p class="text-muted fs-3 ms-3 mt-5">
         찾아주셔서 감사합니다.<br>
         <span class="fw-bold fs-3">기웃장</span>에 오신 것을 환영해요.
@@ -26,8 +26,6 @@
     <button type="button" class="w-100 btn btn-lg btn-secondary mt-3" id="signupButton">회원가입</button>
     <button class="w-100 btn btn-lg btn-success mt-3" type="button">네이버 로그인</button>
 </div>
-
-<script th:src="@{/js/navigation.js}"></script>
 
 </body>
 </html>
