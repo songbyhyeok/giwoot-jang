@@ -7,7 +7,7 @@
 
 <body>
 
-<div class="container-xxl">
+<div th:fragment="header" class="container-xxl">
     <div class="row mt-1 text-muted fw-bold">
 
         <div class="col-xxl-4">
@@ -29,10 +29,10 @@
             <button type="button" class="btn btn-outline-dark btn-sm">경매 등록</button>
         </div>
         <div class="col-xxl ms-3">
-            <button type="button" class="btn btn-outline-dark btn-sm">로그인</button>
+            <button type="button" class="btn btn-outline-dark btn-sm" id="loginButton">로그인</button>
         </div>
     </div>
-</div>
 
+</div>
 </body>
 </html>
