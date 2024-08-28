@@ -21,12 +21,33 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Create application.yml
+      - name: Create Application.yml
         shell: bash
+        env:
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          MYSQL_ID: ${{ secrets.MYSQL_ID }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          SECURITY_NAME: ${{ secrets.SECURITY_NAME }}
+          SECURITY_PASSWORD: ${{ secrets.SECURITY_PASSWORD }}
         run: |
           mkdir -p ./src/main/resources
           cd ./src/main/resources
           echo "${{ secrets.APPLICATION_YML }}" > application.yml
+
+      - name: Setup SSH key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_ED25519_PEM }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed
+          chmod 600 ~/.ssh/id_ed
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Start SSH tunnel
+        run: |
+          nohup ssh -i ~/.ssh/id_ed -fN -L 3307:${{ secrets.MYSQL_ENDPOINT }}:3306 ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} &
+          echo $! > ssh-tunnel.pid
+          echo "SSH tunnel started with PID $(cat ssh-tunnel.pid)"
 
       - name: Grant execute permission for Gradle
         run: chmod +x ./gradlew
@@ -35,4 +56,24 @@ jobs:
         uses: gradle/actions/setup-gradle@dbbdc275be76ac10734476cc723d82dfe7ec6eda # v3.4.2
 
       - name: Build with Gradle Wrapper
-        run: ./gradlew build
+        run: ./gradlew clean build
+
+      - name: Stop SSH tunnel
+        if: always()
+        run: |
+          echo "Stopping SSH tunnel"
+          if [ -f ssh-tunnel.pid ]; then
+            PID=$(cat ssh-tunnel.pid)
+            echo "Killing SSH tunnel with PID $PID"
+            kill $PID || true
+            sleep 2
+            if pgrep -f "ssh -i ~/.ssh/id_ed -fN -L 3307:${{ secrets.MYSQL_ENDPOINT }}:3306" > /dev/null; then
+              echo "SSH tunnel still running. Forcing termination."
+              kill -9 $PID || true
+            else
+              echo "SSH tunnel stopped successfully"
+            fi
+            rm ssh-tunnel.pid
+          else
+            echo "No PID file found. SSH tunnel might not have been started."
+          fi
