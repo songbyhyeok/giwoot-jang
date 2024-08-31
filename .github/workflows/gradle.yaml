@@ -6,13 +6,27 @@ on:
   pull_request:
     branches: [ "develop" ]
 
+env:
+  APPLICATION_YAML: ${{ secrets.APPLICATION_YAML }}
+  SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+  SSH_HOST: ${{ secrets.SSH_HOST }}
+  SSH_ED25519_PEM: ${{ secrets.SSH_ED25519_PEM }}
+  LOCAL_DB_PORT: ${{ secrets.LOCAL_DB_PORT }}
+  RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
+  RDS_PORT: ${{ secrets.RDS_PORT }}
+  DB_ENDPOINT: ${{ secrets.DB_ENDPOINT }}
+  DB_PORT: ${{ secrets.DB_PORT }}
+  DB_NAME: ${{ secrets.DB_NAME }}
+  DB_ID: ${{ secrets.DB_ID }}
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  SECURITY_NAME: ${{ secrets.SECURITY_NAME }}
+  SECURITY_PASSWORD: ${{ secrets.SECURITY_PASSWORD }}
+
 jobs:
   build:
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
-
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -21,31 +35,23 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Create Application.yml
+      - name: Create Application.yaml
         shell: bash
-        env:
-          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
-          MYSQL_ID: ${{ secrets.MYSQL_ID }}
-          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-          SECURITY_NAME: ${{ secrets.SECURITY_NAME }}
-          SECURITY_PASSWORD: ${{ secrets.SECURITY_PASSWORD }}
         run: |
           mkdir -p ./src/main/resources
           cd ./src/main/resources
-          echo "${{ secrets.APPLICATION_YML }}" > application.yml
+          echo "$APPLICATION_YAML" > application.yaml
 
       - name: Setup SSH key
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_ED25519_PEM }}
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed
+          echo "$SSH_ED25519_PEM" > ~/.ssh/id_ed
           chmod 600 ~/.ssh/id_ed
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${SSH_HOST}>> ~/.ssh/known_hosts
 
       - name: Start SSH tunnel
         run: |
-          nohup ssh -i ~/.ssh/id_ed -fN -L 3307:${{ secrets.MYSQL_ENDPOINT }}:3306 ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} &
+          nohup ssh -i ~/.ssh/id_ed -fN -L ${LOCAL_DB_PORT}:${RDS_ENDPOINT}:${RDS_PORT} ${SSH_USERNAME}@${SSH_HOST} &
           echo $! > ssh-tunnel.pid
           echo "SSH tunnel started with PID $(cat ssh-tunnel.pid)"
 
@@ -53,7 +59,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@dbbdc275be76ac10734476cc723d82dfe7ec6eda # v3.4.2
+        uses: gradle/actions/setup-gradle@v3.4.2
 
       - name: Build with Gradle Wrapper
         run: ./gradlew clean build
@@ -67,7 +73,7 @@ jobs:
             echo "Killing SSH tunnel with PID $PID"
             kill $PID || true
             sleep 2
-            if pgrep -f "ssh -i ~/.ssh/id_ed -fN -L 3307:${{ secrets.MYSQL_ENDPOINT }}:3306" > /dev/null; then
+            if pgrep -f "ssh -i ~/.ssh/id_ed -fN -L ${LOCAL_DB_PORT}:${RDS_ENDPOINT}:${RDS_PORT}" > /dev/null; then
               echo "SSH tunnel still running. Forcing termination."
               kill -9 $PID || true
             else
