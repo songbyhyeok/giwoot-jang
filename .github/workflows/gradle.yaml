@@ -2,7 +2,7 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "feat/#27/Github-Actions-CI/CD" ]
   pull_request:
     branches: [ "develop" ]
 
