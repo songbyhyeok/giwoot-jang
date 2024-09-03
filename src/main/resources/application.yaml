@@ -3,8 +3,8 @@ spring:
     import: optional:file:.env[.properties]
   datasource:
     url: jdbc:mysql://${DB_ENDPOINT}:${DB_PORT}/${DB_NAME}
-    username: ${DB_ID}
-    password: ${DB_PASSWORD}
+    username: ${DB_USERNAME}
+    password: ${DB_PWD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -18,4 +18,4 @@ spring:
   security:
     user:
       name: ${SECURITY_NAME}
-      password: ${SECURITY_PASSWORD}
+      password: ${SECURITY_PWD}
