@@ -25,11 +25,11 @@ jobs:
         run: |
           mkdir -p ./src/main/resources
           cd ./src/main/resources
-          echo '${{ secrets.APPLICATION_YAML }}' | base64 --decode > application.yaml
+          echo '${{ secrets.APPLICATION_YAML }}' > application.yaml
 
       - name: Create .env
         run: |
-          echo '${{ secrets.LOCAL_ENV_FILE }}' | base64 --decode > ./.env
+          echo '${{ secrets.LOCAL_ENV_FILE }}' > ./.env
 
       - name: Grant execute permission for Gradle
         run: chmod +x ./gradlew
