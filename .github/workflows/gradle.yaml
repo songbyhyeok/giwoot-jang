@@ -27,7 +27,7 @@ jobs:
           cd ./src/main/resources
           echo '${{ secrets.APPLICATION_YAML }}' > application.yaml
 
-      - name: Create .env
+      - name: Create EnvFile
         run: |
           echo '${{ secrets.LOCAL_ENV_FILE }}' > ./.env
 
@@ -50,14 +50,11 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Setup SSH key
-        env:
-          SSH_HOSTNAME: ${{ secrets.SSH_HOSTNAME }}
-          SSH_KEY_FILE: ${{ secrets.SSH_KEY_FILE }}
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_KEY_FILE" > ~/.ssh/id_ed
+          echo '${{ secrets.SSH_KEY_FILE }}' > ~/.ssh/id_ed
           chmod 600 ~/.ssh/id_ed
-          ssh-keyscan -H ${SSH_HOSTNAME} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.SSH_HOSTNAME }} >> ~/.ssh/known_hosts
 
       - name: Start SSH tunnel
         env:
@@ -76,9 +73,9 @@ jobs:
 
       - name: Stop SSH tunnel
         env:
-            LOCAL_DB_PORT: ${{ secrets.LOCAL_DB_PORT }}
-            RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
-            RDS_PORT: ${{ secrets.RDS_PORT }}
+          LOCAL_DB_PORT: ${{ secrets.LOCAL_DB_PORT }}
+          RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
+          RDS_PORT: ${{ secrets.RDS_PORT }}
         run: |
           echo "Stopping SSH tunnel"
           if [ -f ssh-tunnel.pid ]; then
@@ -107,56 +104,38 @@ jobs:
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
-        env:
-            DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-            DOCKER_PWD: ${{ secrets.DOCKER_PWD }}
         with:
-          username: ${DOCKER_USERNAME}
-          password: ${DOCKER_PWD}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Create Dockerfile and dockerignore
-        env:
-          DOCKER_FILE: ${{ secrets.DOCKER_FILE }}
-          DOCKER_IGNORE: ${{ secrets.DOCKER_IGNORE }}
+      - name: Create Dockerfile and Dockerignore
         run: |
-          echo "$DOCKER_FILE" > ./Dockerfile
-          echo "$DOCKER_IGNORE" > ./.dockerignore
+          echo '${{ secrets.DOCKER_FILE }}' > ./Dockerfile
+          echo '${{ secrets.DOCKER_IGNORE }}' > ./.dockerignore
 
       - name: Build and push
         uses: docker/build-push-action@v6
-        env:
-            DOCKER_IMAGE_NAME: ${{ secrets.DOCKER_IMAGE_NAME }}
         with:
           context: .
           file: Dockerfile
           push: true
-          tags: ${DOCKER_IMAGE_NAME}
+          tags: ${{ secrets.DOCKER_IMAGE_NAME }}
           build-args: |
             JAR_FILE=build/libs/*.jar
 
       - name: Deploy to AWS EC2
         uses: appleboy/ssh-action@v1.0.3
-        env:
-          SSH_HOSTNAME: ${{ secrets.SSH_HOSTNAME }}
-          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-          SSH_KEY_FILE: ${{ secrets.SSH_KEY_FILE }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PWD: ${{ secrets.DOCKER_PWD }}
-          ENV_FILE: ${{ secrets.DOCKER_ENV_FILE }}
-          COMPOSE_YAML: ${{ secrets.DOCKER_COMPOSE_YAML }}
         with:
-          host: ${SSH_HOSTNAME}
-          username: ${SSH_USERNAME}
-          key: ${SSH_KEY_FILE}
-          port: ${SSH_PORT}
+          host: ${{ secrets.SSH_HOSTNAME }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY_FILE }}
+          port: ${{ secrets.SSH_PORT }}
           script: |
-            docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PWD}
-            docker pull ${DOCKER_IMAGE_NAME}
+            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+            docker pull ${{ secrets.DOCKER_IMAGE_NAME }}
             
-            echo "$ENV_FILE" > ./home/ubuntu/giwoot_jang/.env
-            echo "$COMPOSE_YAML" > ./home/ubuntu/giwoot_jang/compose.yaml
+            mkdir -p ./home/ubuntu/giwoot_jang
             cd ./home/ubuntu/giwoot_jang
+            echo '${{ secrets.DOCKER_ENV_FILE }}' > .env
+            echo '${{ secrets.DOCKER_COMPOSE_YAML }}' > compose.yaml
             docker compose -f compose.yaml up -d
-            
-
