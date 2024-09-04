@@ -120,11 +120,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Create Dockerfile
+      - name: Create Dockerfile and .dockerignore
         env:
           DOCKER_FILE: ${{ secrets.DOCKER_FILE }}
+          DOCKER_IGNORE: ${{ secrets.DOCKER_IGNORE }}
         run: |
           echo "$DOCKER_FILE" > ./Dockerfile
+          echo "$DOCKER_IGNORE" > ./.dockerignore
           ls -R
 
       - name: Build and push
@@ -149,6 +151,15 @@ jobs:
             docker pull ${{ secrets.DOCKER_IMAGE_NAME }}
             
             mkdir -p /home/ubuntu/giwoot_jang
+            cd /home/ubuntu/giwoot_jang
             echo '${{ secrets.DOCKER_ENV_FILE }}' > .env
             echo '${{ secrets.DOCKER_COMPOSE_YAML }}' > compose.yaml
+            
             docker compose -f compose.yaml up -d
+
+            # 현재 세션의 명령 기록을 지우기
+            history -c
+            # 기존 기록 파일 삭제하기
+            rm ~/.bash_history
+            # 현재 세션의 빈 기록을 새 파일에 저장하기 (파일이 새로 생성될 수 있음)
+            history -w
