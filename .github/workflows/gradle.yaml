@@ -122,15 +122,10 @@ jobs:
 
       - name: Create Dockerfile
         env:
-          DOCKER_FILE_CONTENT: ${{ secrets.DOCKER_FILE }}
+          DOCKER_FILE: ${{ secrets.DOCKER_FILE }}
         run: |
-          echo "$DOCKER_FILE_CONTENT" > ./Dockerfile
-
-      - name: List build directory
-        run: ls -R build/libs
-
-      - name: Display structure of build context
-        run: ls -R
+          echo "$DOCKER_FILE" > ./Dockerfile
+          run: ls -R
 
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -153,8 +148,7 @@ jobs:
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
             docker pull ${{ secrets.DOCKER_IMAGE_NAME }}
             
-            mkdir -p ./home/ubuntu/giwoot_jang
-            cd ./home/ubuntu/giwoot_jang
+            mkdir -p /home/ubuntu/giwoot_jang
             echo '${{ secrets.DOCKER_ENV_FILE }}' > .env
             echo '${{ secrets.DOCKER_COMPOSE_YAML }}' > compose.yaml
             docker compose -f compose.yaml up -d
