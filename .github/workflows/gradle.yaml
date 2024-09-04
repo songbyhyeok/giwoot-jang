@@ -109,8 +109,10 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Create Dockerfile
+        env:
+          DOCKER_FILE_CONTENT: ${{ secrets.DOCKER_FILE }}
         run: |
-          echo '${{ secrets.DOCKER_FILE }}' > ./Dockerfile
+          echo "$DOCKER_FILE_CONTENT" > ./Dockerfile
 
       - name: Build and push
         uses: docker/build-push-action@v6
