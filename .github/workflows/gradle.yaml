@@ -146,17 +146,16 @@ jobs:
       - name: Deploy to AWS EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
-          ssh_hostname: ${{ secrets.SSH_HOSTNAME }}
-          ssh_username: ${{ secrets.SSH_USERNAME }}
-          ssh_key_file: ${{ secrets.SSH_KEY_FILE }}
-          ssh_port: ${{ secrets.SSH_PORT }}
+          host: ${{ secrets.SSH_HOSTNAME }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY_FILE }}
+          port: ${{ secrets.SSH_PORT }}
           dockerhub_imagename: ${{ secrets.DOCKERHUB_IMAGENAME }}
           dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
           docker_env_file: ${{ secrets.DOCKER_ENV_FILE }}
           docker_compose_yaml: ${{ secrets.DOCKER_COMPOSE_YAML }}
-          
           script: |
-            docker login -u ${ssh_username} -p ${dockerhub_token}
+            docker login -u ${username} -p ${dockerhub_token}
 
             mkdir -p /home/ubuntu/giwoot_jang
             cd /home/ubuntu/giwoot_jang
