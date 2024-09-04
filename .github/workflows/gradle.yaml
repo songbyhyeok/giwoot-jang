@@ -114,6 +114,12 @@ jobs:
         run: |
           echo "$DOCKER_FILE_CONTENT" > ./Dockerfile
 
+      - name: List build directory
+        run: ls -R build/libs
+
+      - name: Display structure of build context
+        run: ls -R
+
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
