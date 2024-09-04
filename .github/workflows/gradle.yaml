@@ -156,16 +156,16 @@ jobs:
             mkdir -p /home/ubuntu/giwoot_jang
             cd /home/ubuntu/giwoot_jang
             
-            docker compose stop || true
-            docker compose rm -f || true
-            docker rmi ${{ secrets.DOCKERHUB_IMAGENAME }}:latest || true
+            docker stop $(docker ps -a -q)
+            docker rm $(docker ps -a -q)
+            docker rmi $(docker images -q)
             
             docker pull ${{ secrets.DOCKERHUB_IMAGENAME }}
             echo '${{ secrets.DOCKER_ENV_FILE }}' > .env
             echo '${{ secrets.DOCKER_COMPOSE_YAML }}' > compose.yaml           
             docker compose -f compose.yaml up -d
             
-            rm .env
+            rm .env compose.yaml
 
             # 현재 세션의 명령 기록을 지우기
             history -c
