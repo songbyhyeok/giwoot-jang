@@ -156,7 +156,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY_FILE }}
           port: ${{ secrets.SSH_PORT }}
-          envs:
+          allenvs:
             dockerhub_username, dockerhub_token, dockerhub_imagename, docker_env_file, docker_compose_yaml
           script: |
             docker login -u ${dockerhub_username} -p ${dockerhub_token}
