@@ -145,32 +145,24 @@ jobs:
 
       - name: Deploy to AWS EC2
         uses: appleboy/ssh-action@v1.0.3
-        env:
-          dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
-          dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
-          dockerhub_imagename: ${{ secrets.DOCKERHUB_IMAGENAME }}
-          docker_env_file: ${{ secrets.DOCKER_ENV_FILE }}
-          docker_compose_yaml: ${{ secrets.DOCKER_COMPOSE_YAML }}
         with:
           host: ${{ secrets.SSH_HOSTNAME }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY_FILE }}
           port: ${{ secrets.SSH_PORT }}
-          envs:
-            dockerhub_username, dockerhub_token, dockerhub_imagename, docker_env_file, docker_compose_yaml
           script: |
-            docker login -u ${dockerhub_username} -p ${dockerhub_token}
+            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
 
             mkdir -p /home/ubuntu/giwoot_jang
             cd /home/ubuntu/giwoot_jang
             
             docker compose stop || true
             docker compose rm -f || true
-            docker rmi ${dockerhub_imagename}:latest || true
+            docker rmi ${{ secrets.DOCKERHUB_IMAGENAME }}:latest || true
             
-            docker pull ${dockerhub_imagename}
-            echo "${docker_env_file}" > .env
-            echo "${docker_compose_yaml}" > compose.yaml           
+            docker pull ${{ secrets.DOCKERHUB_IMAGENAME }}
+            echo '${{ secrets.DOCKER_ENV_FILE }}' > .env
+            echo '${{ secrets.DOCKER_COMPOSE_YAML }}' > compose.yaml           
             docker compose -f compose.yaml up -d
             
             rm .env
