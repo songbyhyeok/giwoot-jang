@@ -36,7 +36,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: wrapper
 
@@ -146,8 +146,9 @@ jobs:
       - name: Deploy to AWS EC2
         uses: appleboy/ssh-action@v1.0.3
         env:
-          dockerhub_imagename: ${{ secrets.DOCKERHUB_IMAGENAME }}
+          dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+          dockerhub_imagename: ${{ secrets.DOCKERHUB_IMAGENAME }}
           docker_env_file: ${{ secrets.DOCKER_ENV_FILE }}
           docker_compose_yaml: ${{ secrets.DOCKER_COMPOSE_YAML }}
         with:
@@ -156,9 +157,9 @@ jobs:
           key: ${{ secrets.SSH_KEY_FILE }}
           port: ${{ secrets.SSH_PORT }}
           envs:
-            dockerhub_imagename, dockerhub_token, docker_env_file, docker_compose_yaml
+            dockerhub_username, dockerhub_token, dockerhub_imagename, docker_env_file, docker_compose_yaml
           script: |
-            docker login -u ${username} -p ${dockerhub_token}
+            docker login -u ${dockerhub_username} -p ${dockerhub_token}
 
             mkdir -p /home/ubuntu/giwoot_jang
             cd /home/ubuntu/giwoot_jang
