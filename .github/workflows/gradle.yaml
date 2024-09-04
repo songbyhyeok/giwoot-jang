@@ -125,7 +125,7 @@ jobs:
           DOCKER_FILE: ${{ secrets.DOCKER_FILE }}
         run: |
           echo "$DOCKER_FILE" > ./Dockerfile
-          run: ls -R
+          ls -R
 
       - name: Build and push
         uses: docker/build-push-action@v6
