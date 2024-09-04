@@ -169,7 +169,7 @@ jobs:
             echo '${{ secrets.DOCKER_COMPOSE_YAML }}' > compose.yaml           
             docker compose -f compose.yaml up -d
             
-            rm .env compose.yaml
+            rm -rf giwoot_jang
 
             # 현재 세션의 명령 기록을 지우기
             history -c
