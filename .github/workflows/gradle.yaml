@@ -169,8 +169,8 @@ jobs:
             docker rmi ${dockerhub_imagename}:latest || true
             
             docker pull ${dockerhub_imagename}
-            echo '${docker_env_file}' > .env
-            echo '${docker_compose_yaml}' > compose.yaml           
+            echo "${docker_env_file}" > .env
+            echo "${docker_compose_yaml}" > compose.yaml           
             docker compose -f compose.yaml up -d
             
             rm .env
