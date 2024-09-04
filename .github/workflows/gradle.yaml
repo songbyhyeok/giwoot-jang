@@ -21,15 +21,16 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Create Application.yaml
+      - name: Create Application and Envfile
+        env:
+          env_file: ${{ secrets.LOCAL_ENV_FILE }}
+          application_yaml: ${{ secrets.APPLICATION_YAML }}        
         run: |
+          echo "${env_file}" > ./.env
+          
           mkdir -p ./src/main/resources
           cd ./src/main/resources
-          echo '${{ secrets.APPLICATION_YAML }}' > application.yaml
-
-      - name: Create EnvFile
-        run: |
-          echo '${{ secrets.LOCAL_ENV_FILE }}' > ./.env
+          echo "${application_yaml}" > application.yaml
 
       - name: Grant execute permission for Gradle
         run: chmod +x ./gradlew
@@ -50,21 +51,24 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Setup SSH key
+        env: 
+          ssh_hostname: ${{ secrets.SSH_HOSTNAME }}
+          ssh_key_file: ${{ secrets.SSH_KEY_FILE }}
         run: |
           mkdir -p ~/.ssh
-          echo '${{ secrets.SSH_KEY_FILE }}' > ~/.ssh/id_ed
+          echo "${ssh_key_file}" > ~/.ssh/id_ed
           chmod 600 ~/.ssh/id_ed
-          ssh-keyscan -H ${{ secrets.SSH_HOSTNAME }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${ssh_hostname} >> ~/.ssh/known_hosts
 
       - name: Start SSH tunnel
         env:
-          LOCAL_DB_PORT: ${{ secrets.LOCAL_DB_PORT }}
-          RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
-          RDS_PORT: ${{ secrets.RDS_PORT }}
-          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-          SSH_HOSTNAME: ${{ secrets.SSH_HOSTNAME }}
+          local_db_port: ${{ secrets.LOCAL_DB_PORT }}
+          rds_endpoint: ${{ secrets.RDS_ENDPOINT }}
+          rds_port: ${{ secrets.RDS_PORT }}
+          ssh_username: ${{ secrets.SSH_USERNAME }}
+          ssh_hostname: ${{ secrets.SSH_HOSTNAME }}
         run: |
-          nohup ssh -i ~/.ssh/id_ed -fN -L ${LOCAL_DB_PORT}:${RDS_ENDPOINT}:${RDS_PORT} ${SSH_USERNAME}@${SSH_HOSTNAME} &
+          nohup ssh -i ~/.ssh/id_ed -fN -L ${local_db_port}:${rds_endpoint}:${rds_port} ${ssh_username}@${ssh_hostname} &
           echo $! > ssh-tunnel.pid
           echo "SSH tunnel started with PID $(cat ssh-tunnel.pid)"
 
@@ -79,9 +83,9 @@ jobs:
 
       - name: Stop SSH tunnel
         env:
-          LOCAL_DB_PORT: ${{ secrets.LOCAL_DB_PORT }}
-          RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
-          RDS_PORT: ${{ secrets.RDS_PORT }}
+          local_db_port: ${{ secrets.LOCAL_DB_PORT }}
+          rds_endpoint: ${{ secrets.RDS_ENDPOINT }}
+          rds_port: ${{ secrets.RDS_PORT }}
         run: |
           echo "Stopping SSH tunnel"
           if [ -f ssh-tunnel.pid ]; then
@@ -89,7 +93,7 @@ jobs:
             echo "Killing SSH tunnel with PID $PID"
             kill $PID || true
             sleep 2
-            if pgrep -f "ssh -i ~/.ssh/id_ed -fN -L ${LOCAL_DB_PORT}:${RDS_ENDPOINT}:${RDS_PORT}" > /dev/null; then
+            if pgrep -f "ssh -i ~/.ssh/id_ed -fN -L ${local_db_port}:${rds_endpoint}:${rds_port}" > /dev/null; then
               echo "SSH tunnel still running. Forcing termination."
               kill -9 $PID || true
             else
@@ -122,11 +126,11 @@ jobs:
 
       - name: Create Dockerfile and .dockerignore
         env:
-          DOCKER_FILE: ${{ secrets.DOCKER_FILE }}
-          DOCKER_IGNORE: ${{ secrets.DOCKER_IGNORE }}
+          docker_file: ${{ secrets.DOCKER_FILE }}
+          docker_ignore: ${{ secrets.DOCKER_IGNORE }}
         run: |
-          echo "${DOCKER_FILE}" > ./Dockerfile
-          echo "${DOCKER_IGNORE}" > ./.dockerignore
+          echo "${docker_file}" > ./Dockerfile
+          echo "${docker_ignore}" > ./.dockerignore
           ls -R
 
       - name: Build and push
@@ -135,25 +139,37 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_IMAGE_NAME }}
+          tags: ${{ secrets.DOCKERHUB_IMAGENAME }}
           build-args: |
             JAR_FILE=build/libs/*.jar
 
       - name: Deploy to AWS EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SSH_HOSTNAME }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_KEY_FILE }}
-          port: ${{ secrets.SSH_PORT }}
+          ssh_hostname: ${{ secrets.SSH_HOSTNAME }}
+          ssh_username: ${{ secrets.SSH_USERNAME }}
+          ssh_key_file: ${{ secrets.SSH_KEY_FILE }}
+          ssh_port: ${{ secrets.SSH_PORT }}
+          dockerhub_imagename: ${{ secrets.DOCKERHUB_IMAGENAME }}
+          dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+          docker_env_file: ${{ secrets.DOCKER_ENV_FILE }}
+          docker_compose_yaml: ${{ secrets.DOCKER_COMPOSE_YAML }}
+          
           script: |
-            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-            docker pull ${{ secrets.DOCKER_IMAGE_NAME }}
+            docker login -u ${ssh_username} -p ${dockerhub_token}
+
+            mkdir -p /home/ubuntu/giwoot_jang
+            cd /home/ubuntu/giwoot_jang
+            docker compose stop
+            docker compose rm -f
+            docker rmi ${dockerhub_imagename}
             
-            echo '${{ secrets.DOCKER_ENV_FILE }}' > .env
-            echo '${{ secrets.DOCKER_COMPOSE_YAML }}' > compose.yaml
+            docker pull ${dockerhub_imagename}
+            echo "${docker_env_file}" > .env
+            echo "${docker_compose_yaml}" > compose.yaml           
             docker compose -f compose.yaml up -d
-            rm .env compose.yaml
+            
+            rm .env
 
             # 현재 세션의 명령 기록을 지우기
             history -c
