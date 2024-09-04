@@ -40,7 +40,7 @@ jobs:
           gradle-version: wrapper
 
       - name: Cache Gradle packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -71,6 +71,12 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build --no-daemon
 
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jar-file
+          path: build/libs/*.jar
+
       - name: Stop SSH tunnel
         env:
           LOCAL_DB_PORT: ${{ secrets.LOCAL_DB_PORT }}
@@ -99,6 +105,12 @@ jobs:
       contents: read
     needs: ci
     steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jar-file
+          path: build/libs/
+    
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
