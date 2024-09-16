@@ -1,14 +1,25 @@
 package com.giwootjang.backend.member.domain;
 
+import com.giwootjang.backend.member.domain.type.MemberLoginType;
+import com.giwootjang.backend.member.domain.type.MemberStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "members")
+@ToString
 public class Member {
-
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long memberNo;
+
     @Column(name = "member_id", length = 20, nullable = false)
     private String memberId;
 
@@ -29,11 +40,11 @@ public class Member {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private Status status;
+    private MemberStatus status;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "login_type", nullable = false)
-    private LoginType loginType;
+    private MemberLoginType loginType;
 
     @Column(name = "amount", precision = 10, scale = 2, nullable = false)
     private BigDecimal amount;
@@ -41,22 +52,36 @@ public class Member {
     @Column(name = "points", precision = 10, scale = 2)
     private BigDecimal points;
 
+    @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @LastModifiedDate
+    @Column(name = "modified_at")
+    private LocalDateTime modifiedAt;
 
-    // Enum for status
-    public enum Status {
-        ACTIVE, SLEEP, ADVERTISER
+    private Member(String id, String name, String pwd, String email,
+                   String phone, String profile, MemberStatus status, MemberLoginType loginType,
+                   BigDecimal amount, BigDecimal points) {
+        this.memberId = id;
+        this.name = name;
+        this.password = pwd;
+        this.email = email;
+        this.phone = phone;
+        this.profile = profile;
+        this.status = status;
+        this.loginType = loginType;
+        this.amount = amount;
+        this.points = points;
+        this.createdAt = LocalDateTime.now();
+        this.modifiedAt = createdAt;
     }
 
-    // Enum for login type
-    public enum LoginType {
-        DEFAULT, OAUTH
+    public static Member of(String id, String name, String pwd, String email,
+                            String phone, String profile, MemberStatus status, MemberLoginType loginType,
+                            BigDecimal amount, BigDecimal points
+                            ) {
+        return new Member(id, name, pwd, email, phone, profile, status, loginType, amount, points);
     }
-
-    // Getters and Setters omitted for brevity
 }
 

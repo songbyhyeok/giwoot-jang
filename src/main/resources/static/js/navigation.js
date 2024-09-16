@@ -5,12 +5,11 @@ const routes = {
 };
 
 // 이벤트 리스너 설정 함수
-const setupNavigation = () => {
+const connectNavigation = () => {
     // 로그인 버튼 클릭 시 로그인 페이지로 이동
     const loginButton = document.getElementById('loginButton');
     if (loginButton) {
         loginButton.addEventListener('click', () => {
-            console.log("login")
             window.location.href = routes.login;
         });
     }
@@ -24,5 +23,4 @@ const setupNavigation = () => {
     }
 };
 
-// DOMContentLoaded 이벤트가 발생하면 setupNavigation 함수를 실행
-document.addEventListener('DOMContentLoaded', setupNavigation);
+document.addEventListener('DOMContentLoaded', connectNavigation);
