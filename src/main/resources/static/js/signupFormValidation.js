@@ -1,3 +1,30 @@
+
+const validateId = () => {
+    const id = document.getElementById('id');
+    const duplicateCheck = document.getElementById('duplicateCheck');
+
+    async function getUser() {
+        try {
+            const response = await axios.get(`/user?id=${id.value}`);
+            console.log(response);
+            if (response.data) {
+                alert("중복된 아이디입니다.");
+                id.value = '';
+            } else {
+                alert("사용 가능한 아이디입니다.")
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    if (duplicateCheck) {
+        duplicateCheck.addEventListener('click', () => {
+            const isIdDuplicate = getUser();
+        });
+    }
+}
+
 const validatePassword = () => {
     const form = document.getElementById('signupForm');
     const password = document.getElementById('password');
@@ -28,4 +55,5 @@ const validatePassword = () => {
     });
 }
 
+document.addEventListener('DOMContentLoaded', validateId);
 document.addEventListener('DOMContentLoaded', validatePassword);

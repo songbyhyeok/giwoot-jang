@@ -20,13 +20,13 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberNo;
 
-    @Column(name = "member_id", length = 20, nullable = false)
+    @Column(name = "member_id", length = 20, nullable = false, unique = true)
     private String memberId;
 
     @Column(name = "name", length = 4, nullable = false)
     private String name;
 
-    @Column(name = "password", length = 30, nullable = false)
+    @Column(name = "password", length = 255, nullable = false)
     private String password;
 
     @Column(name = "email", length = 40, nullable = false)
