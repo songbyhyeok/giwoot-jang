@@ -2,7 +2,7 @@ name: Java CI/CD with Gradle and Docker
 
 on:
   push:
-    branches: [ "feat/#27/Github-Actions-CI/CD" ]
+    branches: [ "feat/#30/Github-Actions-CI/CD" ]
   pull_request:
     branches: [ "develop" ]
 

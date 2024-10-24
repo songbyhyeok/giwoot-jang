@@ -1,0 +1,6 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="SSM-rds-port-forwarding" type="PowerShellRunType" factoryName="PowerShell" scriptUrl="C:\Workplace\config-data\ssm-rds-port-forwarding.ps1" workingDirectory="C:\Workplace\config-data" executablePath="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe">
+    <envs />
+    <method v="2" />
+  </configuration>
+</component>

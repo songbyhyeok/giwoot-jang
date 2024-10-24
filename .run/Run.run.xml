@@ -1,8 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run" type="Multirun" separateTabs="false" reuseTabsWithFailures="false" startOneByOne="true" markFailedProcess="true" hideSuccessProcess="false" delayTime="1.0">
-    <runConfiguration name="Local-port-forwarding" type="PowerShell" />
+  <configuration default="false" name="Run" type="Multirun" separateTabs="false" reuseTabsWithFailures="false" startOneByOne="true" markFailedProcess="true" hideSuccessProcess="false" delayTime="2.0">
+    <runConfiguration name="SSM-rds-port-forwarding" type="PowerShell" />
     <runConfiguration name="Giwoot-jang-application" type="Spring Boot" />
-    <runConfiguration name="ssm connect" type="PowerShell" />
     <method v="2" />
   </configuration>
 </component>

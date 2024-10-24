@@ -13,7 +13,7 @@ public class MemberSignupRequest {
     private String password;
     private String passwordChk;
     private String email;
-    private String fPhone;
-    private String mPhone;
-    private String bPhone;
+    private String fPhoneN;
+    private String mPhoneN;
+    private String bPhoneN;
 }
