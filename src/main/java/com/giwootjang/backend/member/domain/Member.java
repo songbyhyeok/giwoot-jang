@@ -3,7 +3,6 @@ package com.giwootjang.backend.member.domain;
 import com.giwootjang.backend.member.domain.type.MemberLoginType;
 import com.giwootjang.backend.member.domain.type.MemberStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
@@ -14,6 +13,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "members")
+@NoArgsConstructor
 @ToString
 public class Member {
     @Id

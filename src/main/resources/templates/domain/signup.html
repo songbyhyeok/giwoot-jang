@@ -6,7 +6,6 @@
 <body>
 
 <div th:fragment="content">
-
     <div class="container-xxl border-bottom">
         <p class="text-center text-muted fw-bold fs-2 m-0">회원가입</p>
     </div>
@@ -24,21 +23,21 @@
             </p>
         </div>
 
-        <form action="/signup" method="post" id="signupForm">
+        <form th:action="@{/signup}" method="post" id="signup-form">
             <div class="row mb-3">
                 <label for="name" class="col-sm-3 col-form-label">이름</label>
                 <div class="col-sm-3">
-                    <input type="text" class="form-control" id="name" name="name" required>
+                    <input type="text" class="form-control" id="name" name="name" value="남궁혁">
                 </div>
             </div>
 
             <div class="row mb-3">
                 <label for="id" class="col-sm-3 col-form-label">아이디</label>
                 <div class="col-sm-4">
-                    <input type="text" class="form-control" id="id" name="id">
+                    <input type="text" class="form-control" id="id" name="id" value="s1s1s">
                 </div>
                 <div class="col-sm-3">
-                    <button type="button" class="btn btn-primary" id="duplicateCheckBtn">중복 검사</button>
+                    <button type="button" class="btn btn-primary" id="duplicate-check-btn">중복 검사</button>
                 </div>
             </div>
 
@@ -46,55 +45,56 @@
                 <label for="password" class="col-sm-3 col-form-label">비밀번호</label>
                 <div class="col-sm-5">
                     <input type="password" class="form-control" id="password" name="password">
+                    <span id="pwd-status" class="status"></span>
                 </div>
             </div>
 
             <div class="row mb-3">
-                <label for="passwordConfirm" class="col-sm-3 col-form-label">비밀번호 확인</label>
+                <label for="password-confirm" class="col-sm-3 col-form-label">비밀번호 확인</label>
                 <div class="col-sm-5">
-                    <input type="password" class="form-control" id="passwordConfirm" name="passwordChk">
+                    <input type="password" class="form-control" id="password-confirm" name="passwordConfirm">
+                    <span id="pwd-confirm-status" class="status"></span>
                 </div>
             </div>
 
             <div class="row mb-3">
                 <label for="email" class="col-sm-3 col-form-label">이메일</label>
                 <div class="col-sm-5">
-                    <input type="email" class="form-control" id="email" name="email" placeholder="songbyhyeok@gmail.com" required>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="songbyhyeok@gmail.com" value="s@s" required>
                 </div>
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="fPhoneN" class="col-sm-3 col-form-label">휴대폰 번호</label>
+                <label for="front-phone-number" class="col-sm-3 col-form-label">휴대폰 번호</label>
                 <div class="col-sm-9">
                     <div class="row g-2">
                         <div class="col-2">
-                            <input type="text" class="form-control" id="fPhoneN" name="fPhoneN" value="010" maxlength="3" readonly>
+                            <input type="text" class="form-control" id="front-phone-number" name="fPhoneN" value="010" maxlength="3">
                         </div>
                         <div class="col-2">
-                            <input type="text" class="form-control" id="mPhoneN" name="mPhoneN" placeholder="1234" maxlength="4">
+                            <input type="text" class="form-control" id="mid-phone-number" name="mPhoneN" placeholder="1234" value="1234" maxlength="4">
                         </div>
                         <div class="col-2">
-                            <input type="text" class="form-control" id="bPhoneN" name="bPhoneN" placeholder="5678" maxlength="4">
+                            <input type="text" class="form-control" id="back-phone-number" name="bPhoneN" placeholder="5678" value="1234" maxlength="4">
                         </div>
                         <div class="col-auto">
-                            <button type="button" class="btn btn-secondary" id="VerificationCodeBtn">인증번호 발송</button>
+                            <button type="button" class="btn btn-secondary" id="auth-code-generation-btn">인증번호 발송</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="row mb-3 align-items-center" id="verificationCodeDiv" style="display: none">
+            <div class="row mb-3 align-items-center" id="auth-code-div" style="display: none">
                 <div class="col-sm-3"></div>
                 <div class="col-sm-9">
                     <div class="row g-2">
                         <div class="col-6">
-                            <input type="text" class="form-control" id="authNumber" placeholder="인증번호 입력" maxlength="4">
+                            <label for="auth-number-input" hidden></label>
+                            <input type="text" class="form-control" id="auth-number-input" placeholder="인증번호 입력" maxlength="6">
                         </div>
                         <div class="col-auto">
-                            <button type="button" class="btn btn-outline-secondary" id="retransmissionBtn">재전송</button>
-                        </div>
-                        <div class="col-auto">
-                            <button type="button" class="btn btn-primary" id="authBtn">인증</button>
+                            <button type="button" class="btn btn-primary" id="auth-code-verification-btn">인증</button>
+                            <span id="clock" style="color:black;"></span>
                         </div>
                     </div>
                 </div>
@@ -102,7 +102,7 @@
 
             <div class="row mb-3 justify-content-center mt-4">
                 <div class="col-sm-2 d-flex justify-content-center">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                     <button type="submit" class="btn btn-secondary w-100">확인</button>
                 </div>
             </div>

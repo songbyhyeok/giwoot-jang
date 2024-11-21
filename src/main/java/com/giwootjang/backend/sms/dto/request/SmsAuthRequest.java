@@ -1,20 +1,18 @@
-package com.giwootjang.backend.member.dto.request;
+package com.giwootjang.backend.sms.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 @Getter
-@Setter
 @ToString
-public class MemberSignupRequest {
+public class SmsAuthRequest {
+    @JsonProperty("name")
     private String name;
-    private String id;
-    private String password;
-    private String passwordConfirm;
-    private String email;
+    @JsonProperty("fPhoneN")
     private String fPhoneN;
+    @JsonProperty("mPhoneN")
     private String mPhoneN;
+    @JsonProperty("bPhoneN")
     private String bPhoneN;
 }

@@ -1,51 +1,25 @@
 package com.giwootjang.backend.member.presentation;
 
-//import com.giwootjang.backend.cache.Dummy;
-//import com.giwootjang.backend.cache.DummyRepository;
-import com.giwootjang.backend.cache.SquaredCalculator;
 import com.giwootjang.backend.member.dto.request.MemberSignupRequest;
 import com.giwootjang.backend.member.service.MemberService;
+import com.giwootjang.backend.sms.dto.request.SmsAuthRequest;
+import com.giwootjang.backend.sms.dto.request.SmsAuthVerificationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Controller
 @RequiredArgsConstructor
 public class MemberController {
-    private final MemberService memberService;
-    private final SquaredCalculator squaredCalculator;
-//    private final DummyRepository dummyRepository;
+    private final MemberService     memberService;
 
     @GetMapping("/")
     public String showMain(Model model) {
 
-        //squaredCalculator.whenCalculatingSquareValueAgain_thenCacheHasAllValues();
-//        Dummy dummy = new Dummy(
-//                "Eng2015001", "John Doe", Dummy.Gender.MALE, 1);
-//        dummyRepository.save(dummy);
-//
-//        Dummy retrievedDummy =
-//                dummyRepository.findById("Eng2015001").get();
-//
-//        retrievedDummy.setName("Richard Watson");
-//        dummyRepository.save(dummy);
-//
-//        dummyRepository.deleteById(dummy.getId());
-//
-//        Dummy engStudent = new Dummy(
-//                "Eng2015001", "John Doe", Dummy.Gender.MALE, 1);
-//        Dummy medStudent = new Dummy(
-//                "Med2015001", "Gareth Houston", Dummy.Gender.MALE, 2);
-//        dummyRepository.save(engStudent);
-//        dummyRepository.save(medStudent);
-//
-//        List<Dummy> students = new ArrayList<>();
-//        dummyRepository.findAll().forEach(students::add);
+//        memberService.dummyTest();
+        memberService.cacheTest();
 
         model.addAttribute("content", "domain/main :: content");
         return "index";
@@ -64,10 +38,11 @@ public class MemberController {
     }
 
     @PostMapping("/signup")
-    public String submit(Model model, @ModelAttribute MemberSignupRequest userRequest) {
-        memberService.processUserSignUp(userRequest);
+    public String submit(Model model, @ModelAttribute MemberSignupRequest signupRequest) {
+        System.out.println(signupRequest);
 
-        model.addAttribute(userRequest);
+        memberService.processUserSignUp(signupRequest);
+        model.addAttribute(signupRequest);
         model.addAttribute("content", "domain/login :: content");
 
         return "index";
@@ -78,9 +53,21 @@ public class MemberController {
         return ResponseEntity.ok(memberService.validateDuplicateId(id));
     }
 
-    @GetMapping("/signup/verification/phones/{phone}")
-    public ResponseEntity<String> checkDuplicateCode(@PathVariable(name = "phone") String phone) {
-        return ResponseEntity.ok(memberService.processSmsVerificationCode(phone));
+    @PostMapping("/signup/verification/phones/auth")
+    public ResponseEntity<Boolean> generatePhoneAuthCode(@RequestBody SmsAuthRequest smsAuthRequest) {
+        System.out.println(smsAuthRequest.toString());
+        return ResponseEntity.ok(memberService.requestPhoneAuth(smsAuthRequest));
     }
 
+    @PostMapping("/signup/verification/phones/confirm")
+    public ResponseEntity<Boolean> checkPhoneAuthCode(@RequestBody SmsAuthVerificationRequest smsAuthVerificationRequest) {
+        System.out.println(smsAuthVerificationRequest);
+        return ResponseEntity.ok(memberService.verifyAuthNumber(smsAuthVerificationRequest));
+    }
+
+    @PostMapping("/signup/verification/phones/clear")
+    public ResponseEntity<Boolean> clearPhoneAuthCode(@RequestBody SmsAuthRequest smsAuthRequest) {
+        System.out.println(smsAuthRequest);
+        return ResponseEntity.ok(memberService.clearAuthNumber(smsAuthRequest));
+    }
 }

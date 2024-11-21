@@ -6,17 +6,11 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PWD}
     driver-class-name: com.mysql.cj.jdbc.Driver
-
-#  data:
-#    redis:
-#      host: ${ELASTIC_CACHE_ENDPOINT}
-#      port: ${ELASTIC_CACHE_PORT}
-#      password: 1234
-#
-#  cache:
-#    cache-names: cache1, cache2
-#    redis:
-#      time-to-live: 10m
+  data:
+    redis:
+      host: localhost
+      port: ${ELASTIC_CACHE_PORT}
+      password: 1234
 
   jpa:
     hibernate:
